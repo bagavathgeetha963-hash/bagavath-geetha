@@ -1,26 +1,26 @@
-# Bhagavad Gita — Private Video Project
+# Bhagavad Gita — Complete Private Video App
 
-This starter keeps private video URLs and media IDs out of the public frontend repository. The browser requests a video by chapter/shloka number from a backend endpoint. The backend resolves the actual media location from server-side environment variables and streams it to authorized users.
+This project separates public source code from private video metadata.
 
-## Important security facts
-- Never put private Drive URLs, access tokens, video IDs, or secrets in frontend code or a public GitHub repository.
-- GitHub Pages is static hosting and cannot securely store secrets or run this backend. Host the `server/` API on a backend host that supports environment variables and private media access.
-- This project includes a secure-by-default video resolver interface, but it does not connect to Google Drive by itself. Configure a trusted private media provider in the backend.
-- A sign-in / authorization policy must be configured before real private videos are served. The included demo API denies playback until `VIDEO_ACCESS_TOKEN` is configured and the request includes that token. For production, replace the simple bearer token with proper user authentication.
-- This ZIP contains no actual videos, Google Drive links, or provider IDs.
+## What is included
+- Telugu React UI for all 18 chapters
+- Shloka selector and video player
+- Node.js/Express backend with access-token check
+- Google Drive API streaming adapter using server-side service-account credentials
+- GitHub Actions workflow to build the frontend
+- No Drive IDs, Drive URLs, or private media inside this public source ZIP
 
-## Run
-### Frontend
-`cd client`
-`npm install`
-`npm run dev`
+## Important architecture
+GitHub Pages is static hosting. It cannot run the backend or securely hold service-account keys. Deploy `client/` to static hosting and `server/` to a backend host that supports secrets. Put the private manifest and Google service-account credentials on the backend only.
 
-### Backend
-`cd server`
-`npm install`
-`npm run dev`
+## Setup
+1. Upload this project's public files to GitHub.
+2. Deploy `client/` as a static site. Set `VITE_API_BASE_URL` to your backend URL before building.
+3. Deploy `server/` to a Node.js host.
+4. In the backend host's private filesystem, place `video-manifest.json` at `server/private-data/video-manifest.json`. This file comes from the separate private manifest ZIP and must never be committed to public GitHub.
+5. Add the Google service-account JSON as a host secret/file (`GOOGLE_APPLICATION_CREDENTIALS` path) and share the relevant Drive files/folders with that service-account email, with read access.
+6. Set `VIDEO_ACCESS_TOKEN` as a long random secret in the backend host.
+7. Configure frontend `VITE_VIDEO_ACCESS_TOKEN` only if this is a private single-user deployment. For multi-user use, implement real user login instead; a token compiled into a public frontend is not a secret.
 
-Set `VIDEO_ACCESS_TOKEN` in the backend environment before testing authorized playback. Do not commit `.env`. Copy `.env.example` to `.env` only for local development.
-
-## Add private media provider
-Edit `server/src/mediaProvider.ts`. Implement `getPrivateMediaStream(chapter, shloka)` using a private storage provider API and server-side secrets. It must return a readable stream and a valid content type. Do not return the underlying provider URL or ID to the frontend.
+## Honest limitations
+The private manifest preserves the file IDs and labels from the supplied JSON lists. Some entries have no reliable shloka number or have unusual labels; those are kept as unassigned rather than guessed. The Chapter 1 list is taken from the available existing chapter-1 manifest. Google Drive API access and playback have not been tested in this environment.

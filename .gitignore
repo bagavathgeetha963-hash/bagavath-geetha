@@ -1,1 +1,1 @@
-node_modules\ndist\n.env\nserver/private-media/*\n!server/private-media/.gitkeep\n
+node_modules\ndist\n.env\nserver/private-data/*\n!server/private-data/.gitkeep\nserver/private-media/*\n!server/private-media/.gitkeep\nserver/service-account.json\n
